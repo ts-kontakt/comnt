@@ -50,6 +50,7 @@ These files stay 100% valid — editable and previewable in browser.
 
 ## Philosophy
 Logic-less templates in general is clear separation of design and data.<br>
+With modern CSS (like Tailwind, or scoped selectors), you can target any part HTML precisely<br>
 Inspired by CSS-Tricks: Class Up! Templates, Not Content — the idea is to isolate dynamic logic in comments, keeping your markup clean and maintainable
 https://css-tricks.com/class-up-templates-not-content/
 
