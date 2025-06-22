@@ -4,7 +4,7 @@ A small, simple, human-friendly way to manage template regions using
 **standard comment syntax** — no weird symbols, no broken files, no preprocessing 
 to view your code in a browser.
 
-KTemplates remain fully functional working HTML and JavaScript code that can be 
+Source templates remain fully functional working HTML and JavaScript code that can be 
 opened, viewed, and tested directly in browsers. 
 
 One huge practical benefit: you can inject actual JavaScript-ready values from Python—
