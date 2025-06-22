@@ -47,21 +47,6 @@ These files stay 100% valid — editable and previewable in browser.
 * Frontend-friendly – what devs and designers see is what they get
 * Easy on the eyes – clean [tag_name] blocks
 
-
-## Philosophy
-Logic-less templates in general is clear separation of design and data.<br>
-
-Generating html in app is easy - for example using tinyhtml we can:
-```py
-from tinyhtml import h
-html = h("ul")(
-    h("li")(str(n)) for n in range(3)
-)
-```
-With modern CSS (like Tailwind, or scoped selectors), you can target any part HTML precisely<br>
-Inspired by CSS-Tricks: Class Up! Templates, Not Content — the idea is to isolate dynamic logic in comments, keeping your markup clean and maintainable
-https://css-tricks.com/class-up-templates-not-content/
-
 ### Example use
 ```py
 import comnt
@@ -73,5 +58,20 @@ template = """
 output = render(template, {"title": "A new title"})
 print(output)
 ```
+
+## Philosophy
+Logic-less templates help clearly separate design from data.
+Generating HTML in code is often simpler than using a full-blown templating system.
+
+For example, using [tinyhtml](https://github.com/niklasf/python-tinyhtml) we can:
+```py
+from tinyhtml import h
+html = h("ul")(
+    h("li")(str(n)) for n in range(3)
+)```
+With modern CSS (like Tailwind or scoped selectors), you can precisely target any part of the HTML.
+<br>
+Inspired by CSS-Tricks: Class Up! Templates, Not Content — the idea is to isolate dynamic logic in comments, keeping your markup clean and maintainable
+https://css-tricks.com/class-up-templates-not-content/
 
 MIT licence.
