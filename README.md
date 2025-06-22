@@ -1,13 +1,11 @@
 # comnt - template content using block-annotated comments
 
-A dead-simple, human-friendly way to manage template regions using 
+A small, simple, human-friendly way to manage template regions using 
 **standard comment syntax** — no weird symbols, no broken files, no preprocessing 
 to view your code in a browser.
 
-KEY ADVANTAGE: Templates remain fully functional working HTML and JavaScript code that can be 
-opened, viewed, and tested directly in browsers. **Designer and developer see exactly 
-the same**.
-
+KTemplates remain fully functional working HTML and JavaScript code that can be 
+opened, viewed, and tested directly in browsers. 
 
 One huge practical benefit: you can inject actual JavaScript-ready values from Python—
 not just strings or you can refer to javascript functions defined elsewhere. 
@@ -22,8 +20,8 @@ const user = JSON.parse(JSON.stringify( '{{ user_data | tojson | safe }}'));
 ```
 With comnt:
 ```js
-const data = /*[data_arr*/ [0, 1]
-/*data_arr]*/;
+const data = /*[user_data*/ {'name' : 'Alice' }
+/*user_data]*/;
 ```
 
 ## Two supported tag-comment styles:
@@ -44,7 +42,7 @@ const arr_to_change = [0,1]
 
 These files stay 100% valid — editable and previewable in browser.
 
-* Real code stays real – no broken HTML or unusable JS
+* **Designer and developer see exactly the same**.
 * No regex – pure string methods
 * Frontend-friendly – what devs and designers see is what they get
 * Easy on the eyes – clean [tag_name] blocks
