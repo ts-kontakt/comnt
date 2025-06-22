@@ -68,7 +68,8 @@ For example, using [tinyhtml](https://github.com/niklasf/python-tinyhtml) we can
 from tinyhtml import h
 html = h("ul")(
     h("li")(str(n)) for n in range(3)
-)```
+)
+```
 With modern CSS (like Tailwind or scoped selectors), you can precisely target any part of the HTML.
 <br>
 Inspired by CSS-Tricks: Class Up! Templates, Not Content — the idea is to isolate dynamic logic in comments, keeping your markup clean and maintainable
