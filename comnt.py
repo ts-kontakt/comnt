@@ -5,33 +5,21 @@ from sys import exc_info
 """
 Comnt - template content using block-annotated comments
 
-A dead-simple, human-friendly way to manage template regions using 
-**standard comment syntax** — no weird symbols, no broken files, no preprocessing 
+A dead-simple, human-friendly way to manage template regions using
+**standard comment syntax** — no weird symbols, no broken files, no preprocessing
 to view your code in a browser.
 
-KEY ADVANTAGE: Templates remain fully functional HTML and JavaScript code that can be 
-opened, viewed, and tested directly in browsers. Designers and developers see exactly 
-the same.
-
-No regex: just pure string methods
-
 One huge practical benefit: you can inject actual JavaScript-ready values from Python—
-not just strings or you can refer to javascript functions defined elsewhere. 
-That means you don’t need to wrap your data in quotes and then call 
+not just strings or you can refer to javascript functions defined elsewhere.
+That means you don’t need to wrap your data in quotes and then call
 `JSON.parse(...)` on the frontend, like you often do with Jinja2.
-
-With Jinja2:
-```js
-const user = JSON.parse('{{ user_data | tojson | safe }}');
-or even:
-JSON.parse(JSON.stringify( '{{ user_data | tojson | safe }}')
 
 Supported tag/comment Formats:
     HTML/XML style:
         <!--[tag_name-->
         Content to be replaced
         <!--tag_name]-->
-    
+
     JavaScript/CSS style:
         /*[tag_name*/
        const arr_to_change = [0,1]
@@ -41,20 +29,23 @@ Tag Format Rules:
     - Opening tag: Comment start + '[' + tag_name + Comment continuation
     - Closing tag: Comment start + tag_name + ']' + Comment end
     - Tag names must match exactly between opening and closing tags
-    - Content between tags can span multiple lines
-    - Nested tags are not supported
 
 Author: [Tomasz Sługocki]
-Version: 1.0.0
+Version: 0.0.1
 """
+
+__all__ = ['render', 'write_from_template', 'simple_example', 'example']
 
 
 class NotFoundError(Exception):
     pass
 
 
-def _render_block(text, tag_id, val):
-    " ".join((text, tag_id, val))
+def _render_block(text, tag_id, val=None):
+    assert isinstance(text, str) and isinstance(tag_id, str)
+    assert len(text) > len(tag_id)
+
+    assert val is None or isinstance(val, str)
 
     def get_tags(text, tag_id, ext):
         assert ext in ("html", "js")
@@ -86,7 +77,7 @@ def _render_block(text, tag_id, val):
         except ValueError:
             errs.append(repr(exc_info()[1]))
     if not start_tag:
-        raise ValueError(f"Errors happened: {'\n'.join(errs)}")
+        raise ValueError(f"Errors happened: {''.join(errs)}")
 
     start_idx = text.find(start_tag)
     end_idx = text.find(end_tag)
@@ -97,6 +88,11 @@ def _render_block(text, tag_id, val):
         old_val = text[start_idx + len(start_tag):end_idx]
         return old_val
     return "\n".join((prefix, val, suffix))
+
+
+def get_tag_content(instr, tag):
+    assert len(instr) > len(tag) and tag + instr
+    return _render_block(instr, tag, None)
 
 
 def render(instr, repldict):
@@ -135,19 +131,19 @@ def example():
     content = """
     <!DOCTYPE html>
     <html>
-       <head> 
+       <head>
           <title>
-             Example  comnt rendered page 
+             Example  comnt rendered page
             </title>
-        
+
        </head>
        <body> <h3>
            <!--[title-->
              Welcome to our site!
-          
+
           <!--title]--></h3>
           <!--[content-->
-       
+
           <p>
              This is placeholder content that shows in the browser.
           </p>
@@ -156,11 +152,10 @@ def example():
              "background-color: rgb(245, 245, 245); padding: 10px; border: 1px solid rgb(221, 221, 221);">
              </code>
           <script>
-             // Example data array for 
-             const data = /*[data_arr*/
-             [0, 1]
+             // Example data array for
+             const data = /*[data_arr*/ [0, 1]
              /*data_arr]*/;
-                         
+
              document.addEventListener('DOMContentLoaded', function() {
                  // Display data array in paragraph (like Python's repr)
                  const dataDisplay = document.getElementById('data-display');
@@ -170,21 +165,64 @@ def example():
        </body>
     </html>
     """
+
     outstr = render(
         content,
         {
-            'title': 'Example rendered python object',
-            'content': '<p>Below python range rendered as javascript variable</p>',
-            'data_arr':
-                repr(list(range(10)))  # dont even need json here
+            "title": "Example rendered python object",
+            "content": "<p>Below python range rendered as javascript variable</p>",
+            "data_arr": repr(list(range(10))),  # dont even need json here
             # , 'none_existing' : '0'
-        })
-    file_name = os.path.join(os.getcwd(), 'comnt_test.html')
+        },
+    )
+    file_name = os.path.join(os.getcwd(), "comnt_test.html")
+    with open(file_name, "w", encoding="utf8") as outfile:
+        outfile.write(outstr)
+    open_file(file_name)
+
+
+def simple_example():
+    import json
+    import os
+    import subprocess
+    import sys
+
+    def open_file(filename):
+        if sys.platform.startswith("win"):
+            os.startfile(filename)
+        else:
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, filename])
+
+    content = """
+    <!DOCTYPE html>
+    <p id="title"> </p>
+    <div id="data_arr"></div>
+    <script>
+    const title = /*[title*/
+        "Example title"
+    /*title]*/;
+    const data = /*[data_arr*/
+        [0, 1]
+    /*data_arr]*/;
+
+      document.getElementById("data_arr").textContent = JSON.stringify(data);
+      document.getElementById("title").textContent = title;
+    </script>
+    """
+    outstr = render(
+        content,
+        {
+            "title": json.dumps("Example rendered python object"),
+            "data_arr": json.dumps(list(range(10))),
+        },
+    )
+    file_name = os.path.join(os.getcwd(), "comnt_simple.html")
     with open(file_name, "w", encoding="utf8") as outfile:
         outfile.write(outstr)
     open_file(file_name)
 
 
 if __name__ == "__main__":
+    # simple_example()
     example()
- 
